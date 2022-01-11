@@ -104,6 +104,8 @@ prett-hydra body via `:title-body-format-spec'."
        ((< len1 len) (s-pad-right len " " hint))
        (t            hint)))))
 
+;; fixed multibyte alignment taken from @imakado@github
+;; see https://github.com/jerrypnz/major-mode-hydra.el/issues/48#issue-1058361189
 (defun pretty-hydra--cell-docstring (width head)
   "Generate docstring for a HEAD with given WIDTH."
   (-let* (((key cmd hint &plist :toggle toggle-p) head)
@@ -119,10 +121,10 @@ prett-hydra body via `:title-body-format-spec'."
                                ((listp toggle-p) toggle-p)
                                (t                `(bound-and-true-p ,toggle-p))))
                  (expr (prin1-to-string `(pretty-hydra-toggle ,hint ,status-expr)))
-                 (width (+ width (- (+ (length expr) 2) (+ (length hint) 4)))))
+                 (width (+ width (- (+ (length expr) 2) (+ (string-width hint) 4)))))
             (list (s-pad-right width " " (format " _%s_: %%s%s" escaped-key expr))))
         (-let* ((escaped-hint (s-replace "^" "\\^" hint))
-                (width (+ width (- (length escaped-hint) (length hint)))))
+                (width (+ width (- (length escaped-hint) (string-width hint)))))
           (list (s-pad-right width " " (format " _%s_: %s" escaped-key escaped-hint)))))) ;; string hint
 
      ((or (null hint))
